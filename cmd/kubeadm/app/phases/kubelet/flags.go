@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -103,11 +102,13 @@ func buildKubeletArgMapCommon(opts kubeletFlagsOpts) map[string]string {
 	// TODO: https://github.com/kubernetes/kubeadm/issues/2626
 	hasDockershim := opts.kubeletVersion.Major() == 1 && opts.kubeletVersion.Minor() < 24
 	var dockerSocket string
-	if runtime.GOOS == "windows" {
-		dockerSocket = "npipe:////./pipe/dockershim"
-	} else {
-		dockerSocket = "unix:///var/run/dockershim.sock"
-	}
+
+	// if runtime.GOOS == "windows" {
+	// 	dockerSocket = "npipe:////./pipe/dockershim"
+	// } else {
+	// 	dockerSocket = "unix:///var/run/dockershim.sock"
+	// }
+	dockerSocket = getDockerSocket()
 	if opts.nodeRegOpts.CRISocket == dockerSocket && hasDockershim {
 		kubeletFlags["network-plugin"] = "cni"
 	} else {
