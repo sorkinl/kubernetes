@@ -19,7 +19,8 @@ package kubelet
 import (
 	"fmt"
 	"net"
-	"runtime"
+
+	// "runtime"
 
 	"k8s.io/klog/v2"
 	"k8s.io/mount-utils"
@@ -40,7 +41,6 @@ import (
 	"k8s.io/kubernetes/pkg/kubelet/token"
 	proxyutil "k8s.io/kubernetes/pkg/proxy/util"
 	"k8s.io/kubernetes/pkg/volume"
-	"k8s.io/kubernetes/pkg/volume/util"
 	"k8s.io/kubernetes/pkg/volume/util/hostutil"
 	"k8s.io/kubernetes/pkg/volume/util/subpath"
 )
@@ -129,10 +129,7 @@ func (kvh *kubeletVolumeHost) GetPodsDir() string {
 }
 
 func (kvh *kubeletVolumeHost) GetPodVolumeDir(podUID types.UID, pluginName string, volumeName string) string {
-	dir := kvh.kubelet.getPodVolumeDir(podUID, pluginName, volumeName)
-	if runtime.GOOS == "windows" {
-		dir = util.GetWindowsPath(dir)
-	}
+	dir := getPodHostsPath(kvh, podUID, pluginName, volumeName)
 	return dir
 }
 
